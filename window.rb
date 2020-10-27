@@ -39,5 +39,8 @@ class MyWindow < Gosu::Window
     @player.accelerate if button_down?(Gosu::KbUp) || button_down?(Gosu::GpButton0)
 
     @player.move
+
+    p @other_player.position, @player.position
+    Player.collision(@player, @other_player)
   end
 end

@@ -6,7 +6,7 @@ require 'gosu'
 require 'json'
 
 class Player
-  attr_accessor :x, :y, :vel_x, :vel_y, :score, :image, :angle
+  attr_accessor :x, :y, :vel_x, :vel_y, :score, :image, :angle, :x_range, :y_range
 
   def initialize
     @image = Gosu::Image.new('./player_avatar.png')
@@ -65,5 +65,26 @@ class Player
     self.score = player['score'].to_i
     self.angle = player['angle'].to_i
     move
+  end
+
+  def position
+    [x.round, y.round, vel_x.round, vel_y.round, angle.round, image.height, image.width]
+  end
+
+  def self.collision(player, other_player)
+    return unless (player.position <=> other_player.position) != 1
+    x_range = (other_player.x...other_player.image.width + other_player.x)
+    y_range = (other_player.y...-other_player.image.height + other_player.y)
+    p x_range, y_range
+    x, y, vel_x, vel_y, angle, height, width = player.position
+    op_x, op_y, op_vel_y, op_vel_x, op_angle, height, width = other_player.position
+    if x_range.include?(x) || y_range.include?(y)
+      player.vel_x = vel_x * -1
+      player.vel_y = vel_y * -1
+      other_player.vel_x = op_vel_x * -1
+      other_player.vel_y = op_vel_y * -1
+      other_player.move
+      player.move
+    end
   end
 end
